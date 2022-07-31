@@ -1,151 +1,176 @@
-"use strict";
+"use strict"
 
-var EASY_PUZZLE = "1-58-2----9--764-52--4--819-19--73-6762-83-9-----61-5---76---3-43--2-5-16--3-89--";
-var MEDIUM_PUZZLE = "-3-5--8-45-42---1---8--9---79-8-61-3-----54---5------78-----7-2---7-46--61-3--5--";
-var HARD_PUZZLE = "8----------36------7--9-2---5---7-------457-----1---3---1----68--85---1--9----4--";
+var EASY_PUZZLE =
+  "1-58-2----9--764-52--4--819-19--73-6762-83-9-----61-5---76---3-43--2-5-16--3-89--"
+var MEDIUM_PUZZLE =
+  "-3-5--8-45-42---1---8--9---79-8-61-3-----54---5------78-----7-2---7-46--61-3--5--"
+var HARD_PUZZLE =
+  "8----------36------7--9-2---5---7-------457-----1---3---1----68--85---1--9----4--"
+var Easy =
+  "672819345193..4862485..3197824137659761945283359...714.38..1426.174.6.38.463...71"
+var Med =
+  "8.4.71.9.976.3....5.196....3.7495...692183...4.5726..92483591..169847...753612984"
+var Hard =
+  ".17..69..356194.2..89..71.6.65...273872563419.43...685521......798..53..634...59."
 
-const arr=[EASY_PUZZLE,MEDIUM_PUZZLE,HARD_PUZZLE];
+const arr = [EASY_PUZZLE, MEDIUM_PUZZLE, HARD_PUZZLE, Easy, Med, Hard]
 // Set this variable to true to publicly expose otherwise private functions inside of SudokuSolver
-var TESTABLE = true;
+var TESTABLE = true
 
-var SudokuSolver = function (testable) {
-  var solver;
+var SudokuSolver = (function (testable) {
+  var solver
 
   // PUBLIC FUNCTIONS
   function solve(boardString) {
-    var boardArray = boardString.split("");
+    var boardArray = boardString.split("")
     if (boardIsInvalid(boardArray)) {
-      return false;
+      return false
     }
-    return recursiveSolve(boardString);
+    return recursiveSolve(boardString)
   }
 
   function solveAndPrint(boardString) {
-    var solvedBoard = solve(boardString);
-    console.log(toString(solvedBoard.split("")));
-    return solvedBoard;
+    var solvedBoard = solve(boardString)
+    console.log(toString(solvedBoard.split("")))
+    return solvedBoard
   }
 
   // PRIVATE FUNCTIONS
   function recursiveSolve(boardString) {
-    var boardArray = boardString.split("");
+    var boardArray = boardString.split("")
     if (boardIsSolved(boardArray)) {
-      return boardArray.join("");
+      return boardArray.join("")
     }
-    var cellPossibilities = getNextCellAndPossibilities(boardArray);
-    var nextUnsolvedCellIndex = cellPossibilities.index;
-    var possibilities = cellPossibilities.choices;
+    var cellPossibilities = getNextCellAndPossibilities(boardArray)
+    var nextUnsolvedCellIndex = cellPossibilities.index
+    var possibilities = cellPossibilities.choices
     for (var i = 0; i < possibilities.length; i++) {
-      boardArray[nextUnsolvedCellIndex] = possibilities[i];
-      var solvedBoard = recursiveSolve(boardArray.join(""));
+      boardArray[nextUnsolvedCellIndex] = possibilities[i]
+      var solvedBoard = recursiveSolve(boardArray.join(""))
       if (solvedBoard) {
-        return solvedBoard;
+        return solvedBoard
       }
     }
-    return false;
+    return false
   }
 
   function boardIsInvalid(boardArray) {
-    return !boardIsValid(boardArray);
+    return !boardIsValid(boardArray)
   }
 
   function boardIsValid(boardArray) {
-    return allRowsValid(boardArray) && allColumnsValid(boardArray) && allBoxesValid(boardArray);
+    return (
+      allRowsValid(boardArray) &&
+      allColumnsValid(boardArray) &&
+      allBoxesValid(boardArray)
+    )
   }
 
   function boardIsSolved(boardArray) {
     for (var i = 0; i < boardArray.length; i++) {
       if (boardArray[i] === "-") {
-        return false;
+        return false
       }
     }
-    return true;
+    return true
   }
 
   function getNextCellAndPossibilities(boardArray) {
     for (var i = 0; i < boardArray.length; i++) {
       if (boardArray[i] === "-") {
-        var existingValues = getAllIntersections(boardArray, i);
-        var choices = ["1", "2", "3", "4", "5", "6", "7", "8", "9"].filter(function (num) {
-          return existingValues.indexOf(num) < 0;
-        });
-        return { index: i, choices: choices };
+        var existingValues = getAllIntersections(boardArray, i)
+        var choices = ["1", "2", "3", "4", "5", "6", "7", "8", "9"].filter(
+          function (num) {
+            return existingValues.indexOf(num) < 0
+          }
+        )
+        return { index: i, choices: choices }
       }
     }
   }
 
   function getAllIntersections(boardArray, i) {
-    return getRow(boardArray, i).concat(getColumn(boardArray, i)).concat(getBox(boardArray, i));
+    return getRow(boardArray, i)
+      .concat(getColumn(boardArray, i))
+      .concat(getBox(boardArray, i))
   }
 
   function allRowsValid(boardArray) {
-    return [0, 9, 18, 27, 36, 45, 54, 63, 72].map(function (i) {
-      return getRow(boardArray, i);
-    }).reduce(function (validity, row) {
-      return collectionIsValid(row) && validity;
-    }, true);
+    return [0, 9, 18, 27, 36, 45, 54, 63, 72]
+      .map(function (i) {
+        return getRow(boardArray, i)
+      })
+      .reduce(function (validity, row) {
+        return collectionIsValid(row) && validity
+      }, true)
   }
 
   function getRow(boardArray, i) {
-    var startingEl = Math.floor(i / 9) * 9;
-    return boardArray.slice(startingEl, startingEl + 9);
+    var startingEl = Math.floor(i / 9) * 9
+    return boardArray.slice(startingEl, startingEl + 9)
   }
 
   function allColumnsValid(boardArray) {
-    return [0, 1, 2, 3, 4, 5, 6, 7, 8].map(function (i) {
-      return getColumn(boardArray, i);
-    }).reduce(function (validity, row) {
-      return collectionIsValid(row) && validity;
-    }, true);
+    return [0, 1, 2, 3, 4, 5, 6, 7, 8]
+      .map(function (i) {
+        return getColumn(boardArray, i)
+      })
+      .reduce(function (validity, row) {
+        return collectionIsValid(row) && validity
+      }, true)
   }
 
   function getColumn(boardArray, i) {
-    var startingEl = Math.floor(i % 9);
+    var startingEl = Math.floor(i % 9)
     return [0, 1, 2, 3, 4, 5, 6, 7, 8].map(function (num) {
-      return boardArray[startingEl + num * 9];
-    });
+      return boardArray[startingEl + num * 9]
+    })
   }
 
   function allBoxesValid(boardArray) {
-    return [0, 3, 6, 27, 30, 33, 54, 57, 60].map(function (i) {
-      return getBox(boardArray, i);
-    }).reduce(function (validity, row) {
-      return collectionIsValid(row) && validity;
-    }, true);
+    return [0, 3, 6, 27, 30, 33, 54, 57, 60]
+      .map(function (i) {
+        return getBox(boardArray, i)
+      })
+      .reduce(function (validity, row) {
+        return collectionIsValid(row) && validity
+      }, true)
   }
 
   function getBox(boardArray, i) {
-    var boxCol = Math.floor(i / 3) % 3;
-    var boxRow = Math.floor(i / 27);
-    var startingIndex = boxCol * 3 + boxRow * 27;
+    var boxCol = Math.floor(i / 3) % 3
+    var boxRow = Math.floor(i / 27)
+    var startingIndex = boxCol * 3 + boxRow * 27
     return [0, 1, 2, 9, 10, 11, 18, 19, 20].map(function (num) {
-      return boardArray[startingIndex + num];
-    });
+      return boardArray[startingIndex + num]
+    })
   }
 
   function collectionIsValid(collection) {
-    var numCounts = {};
-    for(var i = 0; i < collection.length; i++) {
+    var numCounts = {}
+    for (var i = 0; i < collection.length; i++) {
       if (collection[i] != "-") {
         if (numCounts[collection[i]] === undefined) {
-          numCounts[collection[i]] = 1;
+          numCounts[collection[i]] = 1
         } else {
-          return false;
+          return false
         }
       }
     }
-    return true;
+    return true
   }
 
   function toString(boardArray) {
-    return [0, 9, 18, 27, 36, 45, 54, 63, 72].map(function (i) {
-      return getRow(boardArray, i).join(" ");
-    }).join("\n");
+    return [0, 9, 18, 27, 36, 45, 54, 63, 72]
+      .map(function (i) {
+        return getRow(boardArray, i).join(" ")
+      })
+      .join("\n")
   }
 
   if (testable) {
     // These methods will be exposed publicly when testing is on.
-    solver = { 
+    solver = {
       solve: solve,
       solveAndPrint: solveAndPrint,
       recursiveSolve: recursiveSolve,
@@ -161,12 +186,12 @@ var SudokuSolver = function (testable) {
       allBoxesValid: allBoxesValid,
       getBox: getBox,
       collectionIsValid: collectionIsValid,
-      toString: toString };
+      toString: toString,
+    }
   } else {
     // These will be the only public methods when testing is off.
-    solver = { solve: solve,
-      solveAndPrint: solveAndPrint };
+    solver = { solve: solve, solveAndPrint: solveAndPrint }
   }
 
-  return solver;
-}(TESTABLE);
+  return solver
+})(TESTABLE)

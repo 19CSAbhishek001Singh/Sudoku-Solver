@@ -174,9 +174,9 @@
         </tbody>
       </table>
       <div>
-        <button id="solve-button" style="cursor: pointer">Solve!</button>
-        <button id="clear-button" style="cursor: pointer">Clear! board</button>
-        <button id="gen" style="cursor: pointer">Generate Sudoku</button>
+        <button id="solve-button" style="cursor: pointer">Solve</button>
+        <button id="clear-button" style="cursor: pointer">Clear</button>
+        <button id="gen" style="cursor: pointer">Generate</button>
       </div>
     </div>
   </body>
@@ -199,7 +199,7 @@
     document.getElementById("gen").addEventListener("click", function (event) {
       clearBoard()
       var boardString = boardToString()
-      stringToBoard(arr[index % 3])
+      stringToBoard(arr[index % 6])
       index++
     })
 
